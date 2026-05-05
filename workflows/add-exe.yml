@@ -1,0 +1,33 @@
+name: Add External EXE to Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # هر زمان که یک تگ مانند v1.0, v2.0 را پوش کنید، این Action اجرا می‌شود
+
+jobs:
+  add-exe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download EXE from source project's release
+        env:
+          # در اینجا آدرس دانلود فایل exe را از پروژه اصلی قرار دهید
+          DOWNLOAD_URL: "https://github.com/Danialsamadi/cf-knife/releases/download/v1.4.1/cf-knife-windows-amd64.exe"
+        run: |
+          # دانلود فایل exe از منبع اصلی با استفاده از curl (فقط در محیط Action)
+          curl -L -o application.exe "$DOWNLOAD_URL"
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          # نام فایلی که می‌خواهید به Release اضافه شود
+          files: application.exe
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # توکن داخلی گیت‌هاب

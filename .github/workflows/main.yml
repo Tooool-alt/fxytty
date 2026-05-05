@@ -32,10 +32,15 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Commit and push EXE to repository
+            - name: Commit and push EXE to repository
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          # به شاخه اصلی بروید (اینجا فرض می‌کنیم main است)
+          git fetch origin main
+          git checkout main || git checkout -b main origin/main
+          # اضافه کردن فایل
           git add application.exe
           git commit -m "Add EXE file automatically" || echo "No changes to commit"
-          git push
+          # push به شاخه اصلی
+          git push origin main

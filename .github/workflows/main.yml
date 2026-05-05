@@ -5,12 +5,15 @@ on:
     tags:
       - 'v*'
 
+permissions:                        # اضافه شدن دسترسی نوشتن
+  contents: write
+
 jobs:
   add-exe:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5          # از v4 به v5 تغییر یافته است
+        uses: actions/checkout@v5    # از v4 به v5 تغییر یافت
 
       - name: Download EXE from source project's release
         env:
@@ -20,7 +23,7 @@ jobs:
 
       - name: Create GitHub Release
         id: create_release
-        uses: softprops/action-gh-release@v3   # از v1 به v3 تغییر یافته است
+        uses: softprops/action-gh-release@v3   # از v1 به v3 تغییر یافت
         with:
           files: application.exe
           tag_name: ${{ github.ref_name }}

@@ -5,42 +5,29 @@ on:
     tags:
       - 'v*'
 
-permissions:                        # اضافه شدن دسترسی نوشتن
+permissions:
   contents: write
 
 jobs:
   add-exe:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5    # از v4 به v5 تغییر یافت
+      - name: Checkout code (with full history and fetch depth)
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: main   # مستقیماً شاخه main را checkout کن
 
-      - name: Download EXE from source project's release
+      - name: Download EXE
         env:
           DOWNLOAD_URL: "https://github.com/Danialsamadi/cf-knife/releases/download/v1.4.1/cf-knife-windows-amd64.exe"
         run: |
           curl -L -o application.exe "$DOWNLOAD_URL"
 
-      - name: Create GitHub Release
-        id: create_release
-        uses: softprops/action-gh-release@v3   # از v1 به v3 تغییر یافت
-        with:
-          files: application.exe
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            - name: Commit and push EXE to repository
+      - name: Commit and push EXE to repository
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # به شاخه اصلی بروید (اینجا فرض می‌کنیم main است)
-          git fetch origin main
-          git checkout main || git checkout -b main origin/main
-          # اضافه کردن فایل
           git add application.exe
-          git commit -m "Add EXE file automatically" || echo "No changes to commit"
-          # push به شاخه اصلی
+          git commit -m "Add EXE file automatically from workflow" || echo "No changes to commit"
           git push origin main
